@@ -1,0 +1,4 @@
+rootProject.name = 'gl_line'
+include 'core'
+include 'desktop'
+
