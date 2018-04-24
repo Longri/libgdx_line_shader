@@ -21,6 +21,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -32,12 +33,16 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
+import org.mapsforge.core.graphics.*;
+import org.mapsforge.map.awt.graphics.AwtGraphicFactory;
 import org.oscim.backend.CanvasAdapter;
 import org.oscim.backend.GL;
 import org.oscim.backend.GLAdapter;
 import org.oscim.backend.canvas.Color;
 import org.oscim.backend.canvas.Paint.Cap;
 import org.oscim.core.GeometryBuffer;
+import org.oscim.core.PointF;
 import org.oscim.gdx.GdxMapApp;
 import org.oscim.layers.GenericLayer;
 import org.oscim.renderer.BucketRenderer;
@@ -50,6 +55,7 @@ import org.oscim.theme.styles.LineStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class LineRenderTest extends GdxMapApp {
@@ -57,7 +63,7 @@ public class LineRenderTest extends GdxMapApp {
     GeometryBuffer mGeom = new GeometryBuffer(2, 1);
     GeometryBuffer mLine = new GeometryBuffer(2, 1);
     SpriteBatch batch;
-    Texture img;
+    Texture texture;
     ShaderProgram defaultShader, solidShader, dashShader;
     BitmapFont font;
     GL20 gl;
@@ -71,6 +77,9 @@ public class LineRenderTest extends GdxMapApp {
     CheckBox btnLineJoinButt;
     CheckBox btnLineJoinRound;
     CheckBox btnLineJoinSquare;
+    final GraphicFactory GRAPHIC_FACTORY = AwtGraphicFactory.INSTANCE;
+
+    Array<PointF> pathPoints = new Array<>();
 
 
     static boolean fixedLineWidth = true;
@@ -101,7 +110,7 @@ public class LineRenderTest extends GdxMapApp {
         if (fixed) {
             line1 = new LineStyle(Color.RED, 5f);
         } else {
-            line1 = new LineStyle(0, null, Color.RED, 10.0f, cap, false, 0, 0, 0, 0, 1f, false, null, true, null, LineStyle.REPEAT_START_DEFAULT, LineStyle.REPEAT_GAP_DEFAULT);
+            line1 = new LineStyle(0, null, Color.RED, 10.0f, cap, false, 0, 0, 0, 0, 0f, false, null, true, null, LineStyle.REPEAT_START_DEFAULT, LineStyle.REPEAT_GAP_DEFAULT);
         }
 
         TextureItem tex = null;
@@ -114,25 +123,17 @@ public class LineRenderTest extends GdxMapApp {
 
 
         LineBucket ll = l.buckets.addLineBucket(10, line1);
-        ll.addLine(g.translate(0, -20));
+        ll.addLine(g.translate(-40, -100));
 
 
     }
 
-    @Override
-    protected boolean onKeyDown(int keycode) {
-        if (keycode < Input.Keys.NUM_1 || keycode > Input.Keys.NUM_4)
-            return false;
-
-
-        return true;
-    }
 
     @Override
     public void create() {
         super.create();
         batch = new SpriteBatch();
-        img = new Texture("badlogic.jpg");
+        texture = new Texture("badlogic.jpg");
 
         gl = Gdx.gl;
 
@@ -168,6 +169,7 @@ public class LineRenderTest extends GdxMapApp {
         mMapRenderer = new MapRenderer(this.mMap);
         mMapRenderer.onSurfaceCreated();
 
+        pathPoints.add(new PointF(20, 20), new PointF(100, 20), new PointF(50, 50));
 
         createUi();
     }
@@ -229,25 +231,72 @@ public class LineRenderTest extends GdxMapApp {
             log.debug("Actor Clicked");
 
 
-            synchronized (l) {
-                l.clear();
-                GeometryBuffer g = mLine;
-                g.clear();
-                g.startLine();
-                g.addPoint(-100, 0);
-                g.addPoint(100, 0);
+            {//Update VTM
+                synchronized (l) {
+                    l.clear();
+                    GeometryBuffer g = mLine;
+                    g.clear();
+                    g.startLine();
+                    for (PointF poi : pathPoints) {
+                        g.addPoint(poi.x, poi.y);
+                    }
 
+                    Cap cap = Cap.ROUND;
+                    if (btnCapButt.isChecked()) cap = Cap.BUTT;
+                    else if (btnCapSquare.isChecked()) cap = Cap.SQUARE;
 
-                Cap cap = Cap.ROUND;
-                if (btnCapButt.isChecked()) cap = Cap.BUTT;
-                else if (btnCapSquare.isChecked()) cap = Cap.SQUARE;
+                    addLines(l, 0, true, false, cap);
 
-                addLines(l, 0, true, false, cap);
-
+                }
+                mMap.updateMap(true);
             }
 
-            mMap.updateMap(true);
+            {//update mapsforge
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bmp = GRAPHIC_FACTORY.createBitmap(200, 100);
+                        Canvas canvas = GRAPHIC_FACTORY.createCanvas();
+                        canvas.setBitmap(bmp);
 
+                        Path path = GRAPHIC_FACTORY.createPath();
+                        for (PointF poi : pathPoints) {
+                            if (path.isEmpty()) {
+                                path.moveTo(poi.x, poi.y);
+                            } else {
+                                path.lineTo(poi.x, poi.y);
+                            }
+                        }
+
+                        Paint paint = GRAPHIC_FACTORY.createPaint();
+                        paint.setColor(org.mapsforge.core.graphics.Color.RED);
+                        paint.setStrokeWidth(20f);
+
+                        org.mapsforge.core.graphics.Cap cap = org.mapsforge.core.graphics.Cap.ROUND;
+                        if (btnCapButt.isChecked()) cap = org.mapsforge.core.graphics.Cap.BUTT;
+                        else if (btnCapSquare.isChecked()) cap = org.mapsforge.core.graphics.Cap.SQUARE;
+                        paint.setStrokeCap(cap);
+
+                        paint.setStyle(Style.STROKE);
+
+                        canvas.fillColor(org.mapsforge.core.graphics.Color.BLUE);
+                        canvas.drawPath(path, paint);
+//                        canvas.drawLine(10, 10, 50, 50, paint);
+
+
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        try {
+                            bmp.compress(bos);
+                            byte[] bytes = bos.toByteArray();
+                            Pixmap pixmap = new Pixmap(bytes, 0, bytes.length);
+                            texture = new Texture(pixmap, Pixmap.Format.RGB565, false);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+            }
 
         }
     };
@@ -264,7 +313,7 @@ public class LineRenderTest extends GdxMapApp {
         batch.begin();
         font.draw(batch, Integer.toString(Gdx.graphics.getFramesPerSecond()) + " fps", fpsX, fpsY);
         for (int i = 0; i < 1; i++) {
-            batch.draw(img, 0, 0, 100, 100);
+            batch.draw(texture, 0, 200, 200, 100);
         }
         batch.end();
 
@@ -310,7 +359,7 @@ public class LineRenderTest extends GdxMapApp {
     @Override
     public void dispose() {
         batch.dispose();
-        img.dispose();
+        texture.dispose();
         font.dispose();
         dashShader.dispose();
         solidShader.dispose();

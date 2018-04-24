@@ -29,8 +29,8 @@ public class DesktopLauncher {
         config.samples = 1;
         config.x = 100;
         config.y = 0;
-        config.width = 500;
-        config.height = 400;
+        config.width = 800;
+        config.height = 600;
         config.title = "Line Shader Test";
         config.stencil = 8;
         config.foregroundFPS = 0;
