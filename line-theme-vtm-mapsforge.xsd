@@ -1,0 +1,94 @@
+Mapsforge Theme:
+		
+		<xs:complexType name="line">
+			<xs:attribute name="cat" type="xs:string" use="optional" />
+			<xs:attribute name="src" type="tns:src" use="optional" />
+			<xs:attribute name="symbol-width" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="symbol-height" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="symbol-percent" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="dy" default="0" type="xs:float" use="optional" />
+			<xs:attribute name="scale" default="stroke" type="tns:scale" use="optional" />
+			<xs:attribute name="stroke" default="#000000" type="tns:color" use="optional" />
+			<xs:attribute name="stroke-width" default="0" type="tns:nonNegativeFloat" use="optional" />
+			<xs:attribute name="stroke-dasharray" type="tns:strokeDasharray" use="optional" />
+			<xs:attribute name="stroke-linecap" default="round" type="tns:cap" use="optional" />
+			<xs:attribute name="stroke-linejoin" default="round" type="tns:linejoin" use="optional" />
+		</xs:complexType>
+		
+		<xs:simpleType name="linejoin">
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="miter" />
+				<xs:enumeration value="round" />
+				<xs:enumeration value="bevel" />
+			</xs:restriction>
+		</xs:simpleType>
+		
+		<xs:simpleType name="cap">
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="butt" />
+				<xs:enumeration value="round" />
+				<xs:enumeration value="square" />
+			</xs:restriction>
+		</xs:simpleType>
+		
+		<xs:simpleType name="strokeDasharray">
+			<xs:restriction base="xs:string">
+				<xs:pattern
+					value="([0-9]+(\.[0-9]+)? *, *[0-9]+(\.[0-9]+)? *, *)*[0-9]+(\.[0-9]+)? *, *[0-9]+(\.[0-9]+)?" />
+			</xs:restriction>
+		</xs:simpleType>
+		
+		<xs:simpleType name="color">
+			<xs:annotation>
+				<xs:documentation>Supported formats are #RRGGBB and #AARRGGBB.</xs:documentation>
+			</xs:annotation>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})" />
+			</xs:restriction>
+		</xs:simpleType>
+
+		<xs:simpleType name="scale">
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="all" />
+				<xs:enumeration value="none" />
+				<xs:enumeration value="stroke" />
+			</xs:restriction>
+		</xs:simpleType>	
+			
+			
+Vtm Theme:
+			
+		<xs:complexType name="line">
+			<xs:attribute name="cat" type="xs:string" use="optional" />
+			
+			<!-- style: TODO only in style-line-->
+			<xs:attribute name="id" default="0" type="xs:string" use="optional" />
+			
+			<!-- inherited style -->
+			<xs:attribute name="use" default="0" type="xs:string" use="optional" />
+			
+			<xs:attribute name="src" type="tns:src" use="optional" />
+			<xs:attribute name="symbol-width" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="symbol-height" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="symbol-percent" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="stroke" default="#000000" type="tns:color" use="optional" />
+			<xs:attribute name="width" default="0" type="xs:float" use="optional" />
+			<!-- minimum scaled width to draw outline -->
+			<xs:attribute name="min" default="0" type="xs:float" use="optional" />
+			<xs:attribute name="dasharray" type="tns:strokeDasharray" use="optional" />
+			<xs:attribute name="cap" default="round" type="tns:cap" use="optional" />
+			<xs:attribute name="outline" default="" type="xs:string" use="optional" />
+			<xs:attribute name="fade" default="-1" type="xs:integer" use="optional" />
+			<xs:attribute name="blur" default="-1" type="xs:float" use="optional" />
+			<xs:attribute name="fix" default="false" type="xs:boolean" use="optional" />
+			<xs:attribute name="repeat-gap" default="200" type="xs:float" use="optional" />
+			<xs:attribute name="repeat-start" default="30" type="xs:float" use="optional" />
+			
+			<!-- stipple repeat in 'pixel' -->
+			<xs:attribute name="stipple" default="0" type="xs:integer" use="optional" />
+			<!-- stipple color -->
+			<xs:attribute name="stipple-stroke" default="#000000" type="tns:color" use="optional" />
+			<!-- stipple width relative to line width, i.e 0.0-1.0 -->
+			<xs:attribute name="stipple-width" default="0" type="xs:float" use="optional" />
+
+		</xs:complexType>
