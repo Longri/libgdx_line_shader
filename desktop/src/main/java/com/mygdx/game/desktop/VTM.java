@@ -12,6 +12,7 @@ import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.bucket.LineBucket;
 import org.oscim.renderer.bucket.TextureItem;
 import org.oscim.theme.styles.LineStyle;
+import org.oscim.theme.styles.MapsforgeLineStyle;
 
 import java.io.IOException;
 
@@ -41,17 +42,13 @@ public class VTM extends BucketRenderer {
         }
     }
 
-    void addLines(VTM l, int layer, boolean addOutline, boolean fixed, Paint.Cap cap) {
+    void addLines(VTM l, MapsforgeLineStyle style) {
 
         GeometryBuffer g = mLine;
 
-        LineStyle line1;
+        LineStyle line1 = new LineStyle(0, null, style.strokeColor, style.stroke_width, style.stroke_linecap,
+                true, 0, 0, 0, 0, 0f, false, null, true, null, LineStyle.REPEAT_START_DEFAULT, LineStyle.REPEAT_GAP_DEFAULT);
 
-        if (fixed) {
-            line1 = new LineStyle(Color.RED, 5f);
-        } else {
-            line1 = new LineStyle(0, null, Color.RED, 10.0f, cap, false, 0, 0, 0, 0, 0f, false, null, true, null, LineStyle.REPEAT_START_DEFAULT, LineStyle.REPEAT_GAP_DEFAULT);
-        }
 
         TextureItem tex = null;
         try {
@@ -68,7 +65,7 @@ public class VTM extends BucketRenderer {
         ll.addLine(g.translate(-dx, -dy));
     }
 
-    public void lineChanged(Array<PointF> pathPoints, Paint.Cap cap) {
+    public void lineChanged(Array<PointF> pathPoints, MapsforgeLineStyle style) {
         synchronized (this) {
             this.clear();
             GeometryBuffer g = mLine;
@@ -77,7 +74,7 @@ public class VTM extends BucketRenderer {
             for (PointF poi : pathPoints) {
                 g.addPoint(poi.x, poi.y);
             }
-            addLines(this, 0, true, false, cap);
+            addLines(this, style);
         }
 
     }

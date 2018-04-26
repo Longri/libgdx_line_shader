@@ -23,6 +23,11 @@ public class MapsforgeLineStyle extends RenderStyle<LineStyle> {
         this.strokeDasharray = strokeDasharray;
     }
 
+    public MapsforgeLineStyle(int strokeColor, float strokeWidth, Paint.Cap cap, Paint.Join join) {
+        this(null, 0, 0, 0, 0, Scale.stroke
+                , cap, join, strokeColor, strokeWidth, null);
+    }
+
     public enum Scale {
         all, none, stroke
     }

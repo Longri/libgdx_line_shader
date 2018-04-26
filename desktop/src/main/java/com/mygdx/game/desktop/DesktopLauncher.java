@@ -24,7 +24,7 @@ public class DesktopLauncher {
         GLAdapter.init(new LwjglGL20());
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.resizable = false;
+        config.resizable = true;
         config.useHDPI = true;
         config.samples = 1;
         config.x = 100;

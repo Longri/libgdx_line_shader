@@ -9,6 +9,7 @@ import org.mapsforge.core.graphics.*;
 import org.mapsforge.map.awt.graphics.AwtGraphicFactory;
 import org.oscim.backend.canvas.Paint;
 import org.oscim.core.PointF;
+import org.oscim.theme.styles.MapsforgeLineStyle;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,11 +32,11 @@ public class MAPSFORGE {
     }
 
 
-    public void lineChanged(Array<PointF> pathPoints, Paint.Cap cap) {
+    public void lineChanged(Array<PointF> pathPoints, MapsforgeLineStyle style) {
         Gdx.app.postRunnable(new Runnable() {
             @Override
             public void run() {
-                Bitmap bmp = GRAPHIC_FACTORY.createBitmap((int)width, (int)height);
+                Bitmap bmp = GRAPHIC_FACTORY.createBitmap((int) width, (int) height);
                 Canvas canvas = GRAPHIC_FACTORY.createCanvas();
                 canvas.setBitmap(bmp);
 
@@ -49,18 +50,24 @@ public class MAPSFORGE {
                 }
 
                 org.mapsforge.core.graphics.Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(org.mapsforge.core.graphics.Color.RED);
-                paint.setStrokeWidth(20f);
+                paint.setColor(style.strokeColor);
+                paint.setStrokeWidth(style.stroke_width);
 
-                org.mapsforge.core.graphics.Cap mapsforgeCap = org.mapsforge.core.graphics.Cap.ROUND;
-                if (cap == Paint.Cap.BUTT) mapsforgeCap = org.mapsforge.core.graphics.Cap.BUTT;
-                else if (cap == Paint.Cap.SQUARE) mapsforgeCap = org.mapsforge.core.graphics.Cap.SQUARE;
+                Cap mapsforgeCap = Cap.ROUND;
+                if (style.stroke_linecap == Paint.Cap.BUTT) mapsforgeCap = Cap.BUTT;
+                else if (style.stroke_linecap == Paint.Cap.SQUARE) mapsforgeCap = Cap.SQUARE;
                 paint.setStrokeCap(mapsforgeCap);
+
+
+                Join mapsforgeJoin = Join.ROUND;
+                if (style.stroke_linejoin == Paint.Join.BEVEL) mapsforgeJoin = Join.BEVEL;
+                else if (style.stroke_linejoin == Paint.Join.MITER) mapsforgeJoin = Join.MITER;
+                paint.setStrokeJoin(mapsforgeJoin);
 
                 paint.setStyle(Style.STROKE);
 
+
                 canvas.fillColor(org.mapsforge.core.graphics.Color.TRANSPARENT);
-//                canvas.fillColor(org.mapsforge.core.graphics.Color.BLUE);
                 canvas.drawPath(path, paint);
 
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
