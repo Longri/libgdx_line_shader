@@ -62,7 +62,7 @@ public class MAPSFORGE {
                 canvas.fillColor(org.mapsforge.core.graphics.Color.TRANSPARENT);
 //                canvas.fillColor(org.mapsforge.core.graphics.Color.BLUE);
                 canvas.drawPath(path, paint);
-                
+
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 try {
                     bmp.compress(bos);
