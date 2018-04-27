@@ -42,39 +42,32 @@ public class VTM extends BucketRenderer {
         }
     }
 
-    void addLines(VTM l, MapsforgeLineStyle style) {
-
-        GeometryBuffer g = mLine;
-
-        LineStyle line1 = new LineStyle(0, null, style.strokeColor, style.stroke_width, style.stroke_linecap,
-                true, 0, 0, 0, 0, 0f, false, null, true, null, LineStyle.REPEAT_START_DEFAULT, LineStyle.REPEAT_GAP_DEFAULT);
-
-
-        TextureItem tex = null;
-        try {
-            tex = new TextureItem(CanvasAdapter.getBitmapAsset("", "patterns/dot.png"));
-            tex.mipmap = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        LineBucket ll = l.buckets.addLineBucket(10, line1);
-
-        float dx = (Gdx.graphics.getWidth() / 2) - (Gdx.graphics.getWidth() / 3);
-        float dy = Gdx.graphics.getHeight() / 2;
-        ll.addLine(g.translate(-dx, -dy));
-    }
-
     public void lineChanged(Array<PointF> pathPoints, MapsforgeLineStyle style) {
         synchronized (this) {
             this.clear();
-            GeometryBuffer g = mLine;
-            g.clear();
-            g.startLine();
+            mLine.clear();
+            mLine.startLine();
             for (PointF poi : pathPoints) {
-                g.addPoint(poi.x, poi.y);
+                mLine.addPoint(poi.x, poi.y);
             }
-            addLines(this, style);
+            LineStyle line1 = new LineStyle(0, null, style.strokeColor, style.stroke_width, style.stroke_linecap,
+                    true, 0, 0, 0, 0, 0f, false,
+                    null, true, null, LineStyle.REPEAT_START_DEFAULT, LineStyle.REPEAT_GAP_DEFAULT);
+
+
+            TextureItem tex = null;
+            try {
+                tex = new TextureItem(CanvasAdapter.getBitmapAsset("", "patterns/dot.png"));
+                tex.mipmap = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //translate to position inside boundingBox
+            LineBucket ll = this.buckets.addLineBucket(10, line1);
+            float dx = (Gdx.graphics.getWidth() / 2) - (Gdx.graphics.getWidth() / 3);
+            float dy = Gdx.graphics.getHeight() / 2;
+            ll.addLine(mLine.translate(-dx, -dy));
         }
 
     }

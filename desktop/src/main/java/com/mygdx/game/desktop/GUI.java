@@ -53,12 +53,14 @@ public class GUI extends Stage {
 
     private final Map mMap;
     private final VTM vtm;
+    private final MAPSFORGE_VTM mapsforge_vtm;
     private final MAPSFORGE mapsforge;
     final GraphicFactory GRAPHIC_FACTORY = AwtGraphicFactory.INSTANCE;
 
-    public GUI(Map map, VTM l, MAPSFORGE mapsforge) {
+    public GUI(Map map, VTM l, MAPSFORGE_VTM mapsforge_vtm, MAPSFORGE mapsforge) {
         this.vtm = l;
         this.mMap = map;
+        this.mapsforge_vtm = mapsforge_vtm;
         this.mapsforge = mapsforge;
     }
 
@@ -237,6 +239,11 @@ public class GUI extends Stage {
 
             //update mapsforge
             mapsforge.lineChanged(pathPoints, style);
+
+
+            //Update MAPSFORGE_VTM
+            mapsforge_vtm.lineChanged(pathPoints, style);
+            mMap.updateMap(true);
 
             boundigTexture = null;// create new with path points
 

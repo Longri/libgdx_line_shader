@@ -44,12 +44,14 @@ public class LineRenderTest extends GdxMapApp {
     float segmentHeight;
 
     VTM vtm = new VTM();
+    MAPSFORGE_VTM mapsforge_vtm = new MAPSFORGE_VTM();
     MAPSFORGE mapsforge;
 
     @Override
     public void createLayers() {
         MapRenderer.setBackgroundColor(0xff000000);
         mMap.setMapPosition(0, 0, 1 << 4);
+        mMap.layers().add(new GenericLayer(mMap, mapsforge_vtm));
         mMap.layers().add(new GenericLayer(mMap, vtm));
     }
 
@@ -63,7 +65,7 @@ public class LineRenderTest extends GdxMapApp {
         mapsforge = new MAPSFORGE(segmentWidth, segmentHeight);
 
 
-        mainStage = new GUI(mMap, vtm, mapsforge);
+        mainStage = new GUI(mMap, vtm, mapsforge_vtm, mapsforge);
         batch = new SpriteBatch();
 
         gl = Gdx.gl;
