@@ -1,4 +1,6 @@
 rootProject.name = 'gl_line'
 include 'core'
 include 'desktop'
+include 'vtm-ori-core'
+include 'vtm-ori-desktop'
 
