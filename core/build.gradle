@@ -16,6 +16,7 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+    compile 'org.slf4j:slf4j-api:1.7.25'
     compile "de.longri.slf4j-libgdx:slf4j-libgdx:$slf4jLibgdxVersion"
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     compile "org.mapsforge:vtm:$vtmVersion"
