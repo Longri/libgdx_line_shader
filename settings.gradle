@@ -3,4 +3,5 @@ include 'core'
 include 'desktop'
 include 'vtm-ori-core'
 include 'vtm-ori-desktop'
+include 'vtm-gdx'
 
